@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                echo "Task : compile and pack the code!!!!!!!!!!!!!!!!!"
+                echo "Task : compile and pack the code!!!!!"
                 echo "Tool : Maven"
             }
         }
