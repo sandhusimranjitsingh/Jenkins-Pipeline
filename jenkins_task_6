@@ -1,0 +1,79 @@
+pipeline{
+    agent any
+    stages{
+        stage("Build"){
+            steps{
+                echo "Task : compile and pack the code"
+                echo "Tool : Maven"
+            }
+        }
+        stage("Unit and Integration Tests"){
+            steps{
+                echo "Task : runs unit test to ensure the code functions as expected and run integration test to ensure the different componenets of the application works as expected"
+                echo "Tool : Junit test"
+            }
+            post{
+                success{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Unit and Integration Tests status EMail",
+                    body: "Unit and Integration Tests was successful"
+                }
+                failure{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Unit and Integration Tests status EMail",
+                    body: "Unit and Integration Tests- Failed"
+            }
+        }
+        stage("Code Analysis"){
+            steps{
+                echo "integrate a code analysis tool to analyse the code and ensure it meets industry standards"
+                echo "Tool : Checkstyle"
+            }
+        }
+        stage("Security check"){
+            steps{
+            	echo "perfromva security scan on the code using a tool to identify any vulnerability"
+                echo"Tool : SonarQube"
+            }
+            post{
+                success{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Security check status EMail",
+                    body: "Security check was successful"
+                }
+                failure{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Security check status EMail",
+                    body: "Security check- Failed"
+            }
+        }
+        stage("Deploying to Staging"){
+            steps{
+                echo"deploying the application to a staging server like AWS EC2"
+                echo "Tool :Jenkins deployment plugins "
+            }
+        }
+        tage("Integration tests on Staging"){
+            steps{
+                echo "run integration tests on the staging environment to ensure the application functions as expected"
+                echo "Tool : Selenium "
+            }
+            post{
+                success{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Integration tests on Staging status EMail",
+                    body: "Integration tests on Staging was successful"
+                }
+                failure{
+                    mail to : "sssandhu.singh387@gmail.com",
+                    subject: "Integration tests on Staging status EMail",
+                    body: "Integration tests on Staging - Failed"
+        }
+        stage("Deploying to Production"){
+            steps{
+                echo"deploy the application to the production server like AWS EC2"
+                echo "Tool : Jenkins deployment plugins"
+            }
+        }
+    }
+}
