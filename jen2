@@ -6,6 +6,11 @@ pipeline {
                 echo "Task: compile and pack the code!!!!!##########"
                 echo "Tool: Maven"
             }
+            post {
+                always {
+                    archiveArtifacts artifacts: '**/build.log', allowEmptyArchive: true
+                }
+            }
         }
         stage("Unit and Integration Tests") {
             steps {
@@ -13,22 +18,8 @@ pipeline {
                 echo "Tool: Junit test"
             }
             post {
-                success {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Unit and Integration Tests status Email",
-                        body: "${currentBuild.result}: Unit and Integration Tests have completed for Job ",
-                        attachLog: true
-                        
-                    )
-                }
-                failure {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Unit and Integration Tests status Email",
-                        body: "${currentBuild.result}: Unit and Integration Tests have completed for Job ",
-                        attachLog: true
-                    )
+                always {
+                    archiveArtifacts artifacts: '**/unit_integration_tests.log', allowEmptyArchive: true
                 }
             }
         }
@@ -44,21 +35,8 @@ pipeline {
                 echo "Tool: SonarQube"
             }
             post {
-                success {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Security check status Email",
-                        body: "Security check was successful",
-                        attachmentsPattern: "*.log"
-                    )
-                }
-                failure {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Security check status Email",
-                        body: "Security check - Failed",
-                        attachmentsPattern: "*.log"
-                    )
+                always {
+                    archiveArtifacts artifacts: '**/security_check.log', allowEmptyArchive: true
                 }
             }
         }
@@ -74,21 +52,8 @@ pipeline {
                 echo "Tool: Selenium"
             }
             post {
-                success {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Integration tests on Staging status Email",
-                        body: "Integration tests on Staging was successful",
-                        attachmentsPattern: "*.log"
-                    )
-                }
-                failure {
-                    emailext (
-                        to: "sssandhu.singh387@gmail.com",
-                        subject: "Integration tests on Staging status Email",
-                        body: "Integration tests on Staging - Failed",
-                        attachmentsPattern: "*.log"
-                    )
+                always {
+                    archiveArtifacts artifacts: '**/integration_tests.log', allowEmptyArchive: true
                 }
             }
         }
@@ -97,6 +62,16 @@ pipeline {
                 echo "deploy the application to the production server like AWS EC2"
                 echo "Tool: Jenkins deployment plugins"
             }
+        }
+    }
+    post {
+        always {
+            emailext (
+                to: "sssandhu.singh387@gmail.com",
+                subject: "Pipeline Status Email",
+                body: "Pipeline execution completed",
+                attachmentsPattern: "**/*.log"
+            )
         }
     }
 }
