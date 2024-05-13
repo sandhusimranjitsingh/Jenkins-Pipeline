@@ -30,13 +30,18 @@ pipeline {
         }
         stage("Code Analysis") {
             steps {
-                echo "integrate a code analysis tool to analyse the code and ensure it meets industry standards"
+                echo "Integrate a code analysis tool to analyse the code and ensure it meets industry standards"
                 echo "Tool: Checkstyle"
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: '**/checkstyle.log', allowEmptyArchive: true
+                }
             }
         }
         stage("Security check") {
             steps {
-                echo "perform a security scan on the code using a tool to identify any vulnerability"
+                echo "Perform a security scan on the code using a tool to identify any vulnerability"
                 echo "Tool: SonarQube"
             }
             post {
@@ -47,13 +52,13 @@ pipeline {
         }
         stage("Deploying to Staging") {
             steps {
-                echo "deploying the application to a staging server like AWS EC2"
+                echo "Deploying the application to a staging server like AWS EC2"
                 echo "Tool: Jenkins deployment plugins"
             }
         }
         stage("Integration tests on Staging") {
             steps {
-                echo "run integration tests on the staging environment to ensure the application functions as expected"
+                echo "Run integration tests on the staging environment to ensure the application functions as expected"
                 echo "Tool: Selenium"
             }
             post {
@@ -64,7 +69,7 @@ pipeline {
         }
         stage("Deploying to Production") {
             steps {
-                echo "deploy the application to the production server like AWS EC2"
+                echo "Deploy the application to the production server like AWS EC2"
                 echo "Tool: Jenkins deployment plugins"
             }
         }
