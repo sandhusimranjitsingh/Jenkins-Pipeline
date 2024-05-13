@@ -1,6 +1,11 @@
 pipeline {
     agent any
     stages {
+        stage("Print Workspace Directory") {
+            steps {
+                sh "pwd"
+            }
+        }
         stage("Build") {
             steps {
                 echo "Task: compile and pack the code!!!!!##########"
@@ -66,6 +71,10 @@ pipeline {
     }
     post {
         always {
+            script {
+                def logFiles = findFiles(glob: '**/*.log')
+                echo "Found ${logFiles.size()} log files"
+            }
             emailext (
                 to: "sssandhu.singh387@gmail.com",
                 subject: "Pipeline Status Email",
