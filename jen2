@@ -1,31 +1,100 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("Build"){
-            steps{
-                echo "Building ..."
+    stages {
+        stage("Build") {
+            steps {
+                echo "Task: compile and pack the code!!!!!##########"
+                echo "Tool: Maven"
             }
-            post{
-                success{
-                    mail to : "sssandhu.singh387@gmail.com",
-                    subject: "Build status EMail",
-                    body: "Build was successful"
+        }
+        stage("Unit and Integration Tests") {
+            steps {
+                echo "Task: runs unit test to ensure the code functions as expected and run integration test to ensure the different components of the application works as expected"
+                echo "Tool: Junit test"
+            }
+            post {
+                success {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Unit and Integration Tests status Email",
+                        body: "Unit and Integration Tests was successful",
+                        attachmentsPattern: "*.log"
+                    )
+                }
+                failure {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Unit and Integration Tests status Email",
+                        body: "Unit and Integration Tests - Failed",
+                        attachmentsPattern: "*.log"
+                    )
                 }
             }
         }
-        stage("Test"){
-            steps{
-                echo "Testing..."
+        stage("Code Analysis") {
+            steps {
+                echo "integrate a code analysis tool to analyse the code and ensure it meets industry standards"
+                echo "Tool: Checkstyle"
             }
         }
-        stage("Deploy"){
-            steps{
-                echo"Deploying..."
+        stage("Security check") {
+            steps {
+                echo "perform a security scan on the code using a tool to identify any vulnerability"
+                echo "Tool: SonarQube"
+            }
+            post {
+                success {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Security check status Email",
+                        body: "Security check was successful",
+                        attachmentsPattern: "*.log"
+                    )
+                }
+                failure {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Security check status Email",
+                        body: "Security check - Failed",
+                        attachmentsPattern: "*.log"
+                    )
+                }
             }
         }
-        stage("Complete"){
-            steps{
-                echo"Completeing.."
+        stage("Deploying to Staging") {
+            steps {
+                echo "deploying the application to a staging server like AWS EC2"
+                echo "Tool: Jenkins deployment plugins"
+            }
+        }
+        stage("Integration tests on Staging") {
+            steps {
+                echo "run integration tests on the staging environment to ensure the application functions as expected"
+                echo "Tool: Selenium"
+            }
+            post {
+                success {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Integration tests on Staging status Email",
+                        body: "Integration tests on Staging was successful",
+                        attachmentsPattern: "*.log"
+                    )
+                }
+                failure {
+                    emailext (
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Integration tests on Staging status Email",
+                        body: "Integration tests on Staging - Failed",
+                        attachmentsPattern: "*.log"
+                    )
+                }
+            }
+        }
+        stage("Deploying to Production") {
+            steps {
+                echo "deploy the application to the production server like AWS EC2"
+                echo "Tool: Jenkins deployment plugins"
             }
         }
     }
