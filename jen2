@@ -17,16 +17,17 @@ pipeline {
                     emailext (
                         to: "sssandhu.singh387@gmail.com",
                         subject: "Unit and Integration Tests status Email",
-                        body: "Unit and Integration Tests was successful",
-                        attachmentsPattern: "*.log"
+                        body: "${currentBuild.result}: Unit and Integration Tests have completed for Job ",
+                        attachLog: true
+                        
                     )
                 }
                 failure {
                     emailext (
                         to: "sssandhu.singh387@gmail.com",
                         subject: "Unit and Integration Tests status Email",
-                        body: "Unit and Integration Tests - Failed",
-                        attachmentsPattern: "*.log"
+                        body: "${currentBuild.result}: Unit and Integration Tests have completed for Job ",
+                        attachLog: true
                     )
                 }
             }
