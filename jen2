@@ -13,15 +13,14 @@ pipeline {
                 echo "Tool : Junit test"
             }
             post {
-                success {
-                    mail to: "sssandhu.singh387@gmail.com",
-                    subject: "Unit and Integration Tests status EMail",
-                    body: "Unit and Integration Tests was successful"
-                }
-                failure {
-                    mail to: "sssandhu.singh387@gmail.com",
-                    subject: "Unit and Integration Tests status EMail",
-                    body: "Unit and Integration Tests- Failed"
+                always {
+                    emailext(
+                        to: "sssandhu.singh387@gmail.com",
+                        subject: "Unit and Integration Tests status EMail",
+                        body: """<p>Stage 'Stage Name' completed with status ${currentBuild.result}</p>
+<p>Check console output at ${env.BUILD_URL} to view the resulrs.</p>""",
+                        attachLog: true
+                    )
                 }
             }
         }
