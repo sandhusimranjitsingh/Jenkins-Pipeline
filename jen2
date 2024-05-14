@@ -17,11 +17,14 @@ pipeline {
             post {
                 always {
                     script {
-                        // Get the build log
-                        def buildLog = readFile("${env.BUILD_LOG}")
-
+                        // Specify the path to the build log file
+                        def buildLogPath = "${env.WORKSPACE}/jenkins.log"
+                        
+                        // Read the build log
+                        def buildLog = readFile(buildLogPath)
+                        
                         // Send email with build log as attachment
-                        emailext attachmentsPattern: "${buildLog}", 
+                        emailext attachmentsPattern: buildLogPath, 
                             body: """<p>Stage 'Unit and Integration Tests' completed with status ${currentBuild.result}</p>
 <p>Check console output at ${env.BUILD_URL} to view the results.</p>""",
                             to: "sssandhu.singh387@gmail.com", 
