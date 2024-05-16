@@ -1,96 +1,91 @@
 pipeline {
     agent any
+
     stages {
-        stage("Build") {
+        stage('Build') {
             steps {
-                echo "Task: compile and pack the code"
-                echo "Tool: Maven"
-                // Your build steps here
+                echo 'Task : compile and pack the code!!!!!##########'
+                echo 'Tool used: Maven - a build automation tool used primarily for Java projects.'
             }
         }
-        stage("Unit and Integration Tests") {
+
+        stage('Unit and Integration Tests') {
             steps {
-                echo "Task: run unit tests and integration tests"
-                echo "Tool: JUnit"
-                // Your test execution steps here
+                echo 'Task : runs unit test to ensure the code functions as expected and run integration test to ensure the different componenets of the application works as expected'
+                echo 'Tool is used: JUnit for unit testing and Selenium for integration testing.'
+            }
+            post {
+                success {
+                    emailext attachLog: true, body: 'Please find the attached console output.', subject: 'Pipeline Execution Report', to: 'sssandhu.singh387@gmail.com'
+                }
+                failure {
+                    emailext attachLog: true, body: 'Please find the attached console output.', subject: 'Pipeline Execution Report', to: 'sssandhu.singh387@gmail.com'
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                echo 'Task : integrate a code analysis tool to analyse the code and ensure it meets industry standards'
+                echo 'Tool used: Checkstyle'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Task : perform a security scan on the code using a tool to identify any vulnerability'
+                echo 'Tool is used: SonarQube'
             }
             post {
                 always {
-                    script {
-                        // Specify the path to the build log file
-                        def buildLogPath = "${env.WORKSPACE}/jenkins.log"
-                        
-                        // Read the build log
-                        def buildLog = readFile(buildLogPath)
-                        
-                        // Send email with build log as attachment
-                        emailext attachmentsPattern: buildLogPath, 
-                            body: """<p>Stage 'Unit and Integration Tests' completed with status ${currentBuild.result}</p>
-<p>Check console output at ${env.BUILD_URL} to view the results.</p>""",
-                            to: "sssandhu.singh387@gmail.com", 
-                            subject: "Unit and Integration Tests Status: ${currentBuild.result}"
-                    }
+                    emailext attachLog: true, body: 'Security scan done, Please find the attached console output.', subject: 'Pipeline Execution Report', to: 'sssandhu.singh387@gmail.com'
                 }
             }
         }
-        stage("Code Analysis") {
+
+        stage('Deploy to Staging') {
             steps {
-                echo "Task: perform code analysis"
-                echo "Tool: Checkstyle"
-                // Your code analysis steps here
+                echo 'Task : deploying the application to a staging server like AWS EC2'
+                echo 'Tool used: Jenkins deployment plugins '
             }
         }
-        stage("Security Check") {
+
+        stage('Integration Tests on Staging') {
             steps {
-                echo "Task: perform security scan"
-                echo "Tool: SonarQube"
-                // Your security scanning steps here
+                echo 'Task : Runs integration tests on the staging environment to ensure the application functions as expected.'
+                echo 'Tool being used: Selenium'
             }
             post {
                 success {
-                    emailext to: "sssandhu.singh387@gmail.com",
-                        subject: "Security Check Status EMail",
-                        body: "Security check was successful"
+                    emailext attachLog: true, body: 'Please find the attached console output.', subject: 'Pipeline Execution Report', to: 'sssandhu.singh387@gmail.com'
                 }
                 failure {
-                    emailext to: "sssandhu.singh387@gmail.com",
-                        subject: "Security Check Status EMail",
-                        body: "Security check - Failed"
+                    emailext attachLog: true, body: 'Please find the attached console output.', subject: 'Pipeline Execution Report', to: 'sssandhu.singh387@gmail.com'
                 }
             }
         }
-        stage("Deploying to Staging") {
+
+        stage('Deploy to Production') {
             steps {
-                echo "Task: deploy to staging server"
-                echo "Tool: Jenkins deployment plugins"
-                // Your deployment steps here
+                echo 'Task: Deploy to Production - Deploys the application to the production environment where it becomes accessible to end-users.'
+                echo 'Tool used: Jenkins deployment plugins'
             }
         }
-        stage("Integration Tests on Staging") {
-            steps {
-                echo "Task: run integration tests on staging"
-                echo "Tool: Selenium"
-                // Your integration tests on staging steps here
-            }
-            post {
-                success {
-                    emailext to: "sssandhu.singh387@gmail.com",
-                        subject: "Integration Tests on Staging Status EMail",
-                        body: "Integration tests on staging were successful"
-                }
-                failure {
-                    emailext to: "sssandhu.singh387@gmail.com",
-                        subject: "Integration Tests on Staging Status EMail",
-                        body: "Integration tests on staging - Failed"
-                }
-            }
-        }
-        stage("Deploying to Production") {
-            steps {
-                echo "Task: deploy to production server"
-                echo "Tool: Jenkins deployment plugins"
-                // Your deployment to production steps here
-            }
+    }
+
+    post {
+        always {
+            echo 'General notification: The pipeline has completed execution.'
+            // Archive console output
+            archiveArtifacts artifacts: '**/console.log', allowEmptyArchive: true
+
+            // Send email with console output as attachment
+            emailext (
+                to: 'sssandhu.singh387@gmail.com',
+                subject: 'Pipeline Execution Report',
+                body: 'Please find the attached console output.',
+                attachmentsPattern: '**/console.log'
+            )
         }
     }
 }
